@@ -11,23 +11,25 @@
 ## The inverse can be accessed via '$getInv()' and changed via '$setInv()'.
 
 makeCacheMatrix <- function(x = matrix()) {
-    # cached inverse
-    inv <- NULL
 
-    # accessors
-    get <- function() x
-    getInv <- function() inv
+# cached inverse of matrix
+        inv <- NULL
 
-    # mutators
-    set <- function(newX) {
-        x <<- newX
-        inv <<- NULL
-    }
-    setInv <- function(newInv) inv <<- newInv
+ ## getter/setter for matrix
+        set <- function(y) {
+                x <<- y
+                inv <<- NULL
+        }
+  ## getter/setter for matrix inverse
+        get <- function() x
+        setInverse <- function(inverse) inv <<- inverse
+        getInverse <- function() inv
 
-    # return the bundle
-    list(get = get, set = set,
-         getInv = getInv, setInv = setInv)
+ ## return list of functions for matrix
+        list(set = set,
+             get = get,
+             setInverse = setInverse,
+             getInverse = getInverse)
 }
 
 
@@ -37,15 +39,17 @@ makeCacheMatrix <- function(x = matrix()) {
 ## inverse.  Any additional parameters are passed on to 'solve'.
 
 cacheSolve <- function(x, ...) {
-    inv <- x$getInv()
-
-    # invert if necessary
-    if (is.null(inv)) {
-        m <- x$get()
-        inv <- solve(m, ...)
-        x$setInv(inv)
-    }
-
-    # return the inverse matrix
-    inv
+        ## Return a matrix that is the inverse of 'x'
+        inv <- x$getInverse()
+        if (!is.null(inv)) {
+                message("getting cached data")
+                return(inv)
+        }
+ # compute inverse of matrix
+        mat <- x$get()
+        inv <- solve(mat, ...)
+ # cache inverse
+        x$setInverse(inv)
+  # return inverse of matrix
+        inv
 }
